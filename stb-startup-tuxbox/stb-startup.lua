@@ -194,8 +194,12 @@ function has_gpt_layout()
 end
 
 function has_boxmode()
-	for line in io.lines("/proc/cpuinfo") do
-		if line:match("Broadcom") then
+	for line in io.lines("/etc/model") do
+		if line:match("hd51") then
+			return true
+		elseif line:match("h7") then
+			return true
+		elseif line:match("bre2ze4k") then
 			return true
 		end
 	end
@@ -342,6 +346,12 @@ function main()
 	chooser_x = SCREEN.OFF_X + (((SCREEN.END_X - SCREEN.OFF_X) - chooser_dx) / 2)
 	chooser_y = SCREEN.OFF_Y + (((SCREEN.END_Y - SCREEN.OFF_Y) - chooser_dy) / 2)
 
+	if has_boxmode() then
+		setup = "Boxmode"
+	else
+		setup = Nil
+	end
+
 	chooser = cwindow.new {
 		x = chooser_x,
 		y = chooser_y,
@@ -354,7 +364,7 @@ function main()
 		btnGreen = get_imagename(2) .. is_active(2),
 		btnYellow = get_imagename(3) .. is_active(3),
 		btnBlue = get_imagename(4) .. is_active(4),
-		btnSetup = "Boxmode"
+		btnSetup = setup
 	}
 
 	chooser_text = ctext.new {
