@@ -128,17 +128,17 @@ function basename(str)
 	return name
 end
 
-function get_value(str,root,etcdir)
+function get_value(str,root,etcdir,file)
 	local value = ""
 	if is_mounted("/tmp/testmount/userdata") then
-		for line in io.lines("/tmp/testmount/linuxrootfs" .. root  .. etcdir .. "/image-version") do
+		for line in io.lines("/tmp/testmount/linuxrootfs" .. root  .. etcdir .. "/" .. file) do
 			if line:match(str .. "=") then
 				local i,j = string.find(line, str .. "=")
 				value = string.sub(line, j+1, #line)
 			end
 		end
 	elseif is_mounted("/tmp/testmount/rootfs" .. root) then
-		for line in io.lines("/tmp/testmount/rootfs" .. root  .. etcdir .. "/image-version") do
+		for line in io.lines("/tmp/testmount/rootfs" .. root  .. etcdir .. "/" .. file) do
 			if line:match(str .. "=") then
 				local i,j = string.find(line, str .. "=")
 				value = string.sub(line, j+1, #line)
@@ -158,10 +158,15 @@ function get_imagename(root)
 	if etc_isdir and
 	(exists("/tmp/testmount/linuxrootfs" .. root .. "/etc/image-version") or
 	exists("/tmp/testmount/rootfs" .. root  .. "/etc/image-version")) then
-		imagename = get_value("distro", root, "/etc") .. " " .. get_value("imageversion", root, "/etc")
+		imagename = get_value("distro", root, "/etc", "image-version") .. " " .. get_value("imageversion", root, "/etc", "image-version")
 	elseif exists("/tmp/testmount/linuxrootfs" .. root .. "/var/etc/image-version") or
 	exists("/tmp/testmount/rootfs" .. root  .. "/var/etc/image-version") then
-		imagename = get_value("distro", root, "/var/etc") .. " " .. get_value("imageversion", root, "/var/etc")
+		imagename = get_value("distro", root, "/var/etc", "image-version") .. " " .. get_value("imageversion", root, "/var/etc", "image-version")
+	end
+	if imagename == " " and
+	(exists("/tmp/testmount/linuxrootfs" .. root .. "/.version") or
+	exists("/tmp/testmount/rootfs" .. root  .. "/.version")) then
+		imagename = get_value("creator", root, "", ".version") .. " " .. get_value("git", root, "", ".version")
 	end
 	if imagename == " " then
 		local glob = require "posix".glob
@@ -194,7 +199,7 @@ function has_gpt_layout()
 end
 
 function has_boxmode()
-	for line in io.lines("/etc/model") do
+	for line in io.lines("/proc/stb/info/model") do
 		if line:match("hd51") then
 			return true
 		elseif line:match("h7") then
