@@ -78,6 +78,12 @@ elseif boxmodel == "e4hd" then
 	root3 = 7
 	root4 = 9
 	vumodel = boxmodel
+elseif boxmodel == "protek4k" then
+	root1 = 3
+	root2 = 5
+	root3 = 7
+	root4 = 9
+	vumodel = boxmodel
 else
 	return
 end
@@ -399,7 +405,7 @@ function make_cmdline(boxname, rn, rp)
 		else
 			cmdline = "boot emmcflash0.kernel" .. rn ..  " 'brcm_cma=440M@328M brcm_cma=192M@768M root=/dev/mmcblk0p" .. rp .. " rw rootwait " .. boxname .. "_4.boxmode=1'\n"
 		end
-	elseif boxname == "e4hd" then
+	elseif boxname == "e4hd" or boxname == "protek4k" then
 		cmdline = "boot emmcflash0.kernel" .. rn ..  " 'brcm_cma=504M@264M brcm_cma=192M@768M brcm_cma=1024M@2048M root=/dev/mmcblk0p" .. rp .. " rw rootwait " .. boxname .. "_4.boxmode=5'\n"
 	end
 	return cmdline
