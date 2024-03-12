@@ -3,7 +3,7 @@
 -- Copyright 2018 Markus Volk, Sven Hoefer, Don de Deckelwech
 -- STB-Startup for HD51/H7/BRE2ZE4K
 --
--- Changed, now also for VU+ SOLO 4K, VU+ DUO 4K, VU+ DUO 4K SE, VU+ ULTIMO 4K, VU+ UNO 4K, VU+ UNO 4K SE, VU+ ZERO 4K and E4HD 4K ULTRA
+-- Changed, now also for VU+ SOLO 4K, VU+ DUO 4K, VU+ DUO 4K SE, VU+ ULTIMO 4K, VU+ UNO 4K, VU+ UNO 4K SE, VU+ ZERO 4K, E4HD 4K ULTRA and GBUE4K
 -- by BPanther 13/Oct/2022
 --
 -- Redistribution and use in source and binary forms, with or without modification, 
@@ -28,7 +28,7 @@
 -- authors and should not be interpreted as representing official policies, either expressed
 -- or implied, of the Tuxbox Project.
 
-caption = "STB-Startup v1.26 - "
+caption = "STB-Startup v1.27 - "
 bmbox = 0
 
 n = neutrino()
@@ -84,6 +84,12 @@ elseif boxmodel == "protek4k" then
 	root3 = 7
 	root4 = 9
 	vumodel = boxmodel
+elseif boxmodel == "gbue4k" then
+	root1 = 5
+	root2 = 7
+	root3 = 9
+	vumodel = boxmodel
+	bmbox = 2
 else
 	return
 end
@@ -317,6 +323,19 @@ if bmbox == 1 then
 		btnBlue = get_imagename(root4) .. is_active(root4),
 		btnSetup = "Boxmode"
 	}
+elseif bmbox == 2 then
+	chooser = cwindow.new {
+		x = chooser_x,
+		y = chooser_y,
+		dx = chooser_dx,
+		dy = chooser_dy,
+		title = caption .. vumodel:upper(),
+		icon = "settings",
+		has_shadow = true,
+		btnRed = get_imagename(root1) .. is_active(root1),
+		btnGreen = get_imagename(root2) .. is_active(root2),
+		btnYellow = get_imagename(root3) .. is_active(root3),
+		}
 else
 	chooser = cwindow.new {
 		x = chooser_x,
@@ -407,6 +426,7 @@ function make_cmdline(boxname, rn, rp)
 		end
 	elseif boxname == "e4hd" or boxname == "protek4k" then
 		cmdline = "boot emmcflash0.kernel" .. rn ..  " 'brcm_cma=504M@264M brcm_cma=192M@768M brcm_cma=1024M@2048M root=/dev/mmcblk0p" .. rp .. " rw rootwait " .. boxname .. "_4.boxmode=5'\n"
+	elseif boxname == "gbue4k" then cmdline = "boot emmcflash0.kernel" .. rn .. ": 'root=/dev/mmcblk0p" .. rp .. " rootwait rw rootflags=data=journal libata.force=1:3.0G,2:3.0G,3:3.0G coherent_poll=2M vmalloc=525m bmem=529m@491m bmem=608m@2464m'\n"
 	end
 	return cmdline
 end
